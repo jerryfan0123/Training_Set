@@ -246,6 +246,15 @@ def daily_total(df):
 
 
 def grouped_by_sub_dataframe (df, keyword, visitors_type):
+
+    keyword = input("Please enter the keyword that you want to sum up with (e.g. Country, Site):"）
+    
+    visitors_type = input("Please choose between: 1.visitors-total 2.visitors-unique: (1/2)
+    if visitors_type = 1:
+        visitors_type = 'visitors-total'
+    else:
+        visitors_type = 'visitors=unique'
+    
     
     df1 = df[(df.Platform == 'PC') & (df.Type == visitors_type)] 
     #only choose the data that: 1. Platform is PC; 2. Given visitors type.
@@ -262,3 +271,12 @@ def grouped_by_sub_dataframe (df, keyword, visitors_type):
     # Add a column of ratio for grouped dataframe
     
     df_grouped_keyword.to_csv(r'\datasets\combined_csv\df_grouped_keyword.csv')  
+
+
+
+def lookup_code_conti (code):
+    n = 0
+    for  i in range(193):
+        if code == list(code_refer['code'])[i]:
+            n = i
+    return code_refer['continent'][n]
