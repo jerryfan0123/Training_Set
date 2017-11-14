@@ -1,0 +1,48 @@
+%matplotlib inline
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.style.use('ggplot')
+import statsmodels as sm
+import pandas as pd
+from datetime import datetime
+import glob
+import os as os
+import time
+import numpy as np
+from statsmodels.formula.api import ols
+import seaborn as sb
+
+#THE ENTIRE DATA SET
+types = {"Date":'category',
+        "Site":'category',
+        "URL":'category', 
+        "Country":'category', 
+        "Platform":'category', 
+        "Type":'category',
+        "Count":'float32', 
+        "Sample":'float32'}
+
+os.chdir(r'C:\tsv combined')
+df = pd.read_csv('data.tsv',
+            sep='\t',
+            dtype = types,
+            usecols = ["Date", "Site", "Country", "Platform", "Type", "Count", "Sample"])
+
+def daily_total(df):
+    temp = df[(df["Platform"]=="PC") & (df["Type"]=="visitors-total")]
+
+    temp_sample = temp.groupby(["Date","Country"])["Sample"].mean() #sample for a country for a day are the same, so mean just takes that value
+    temp_sample = temp_sample.reset_index() #turn into data frame so can do one more groupby
+    temp_sample = temp_sample.groupby(["Date"])["Sample"].sum() #sum sample of all countries for a day
+
+    temp_count = temp.groupby(["Date"])["Count"].sum() #sum all count for a day
+    
+    sample = temp_sample.reset_index()
+    count = temp_count.reset_index()
+    
+    count["Sample"] = sample["Sample"] #add Sample col
+    count["Ratio"] = count["Count"]/count["Sample"] #add new col Ratio which is Count/Sample
+    
+    return count
+    
+   
