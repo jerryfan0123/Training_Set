@@ -311,6 +311,36 @@ def grouped_by_sub_dataframe (df, keyword, visitors_type):
     df_grouped_keyword.to_csv(r'\datasets\combined_csv\df_grouped_keyword.csv')  
 
 
+### Function code for group up all the entries in the same day and same <keyword> (which you type in) in a dataframe
+### You input the keyword for summation and the type of visitors (total or unique). 
+
+def grouped_by_sub_dataframe (df, keyword, visitors_type): #keyword: "Country", "Site", or "Continent"
+                                                           #visitors_type: 1 or 2. 1 for total, 2 for unique
+
+    while visitors_type != 1 and visitors_type != 2:    
+        if visitors_type == '1':
+            visitors_type = 'visitors-total'
+        elif visitors_type == '2':
+            visitors_type = 'visitors=unique'
+        else:
+            visitors_type = input("Please choose between: 1.visitors-total 2.visitors-unique: (1/2)")
+        
+    
+    df1 = df[(df.Type == visitors_type)] 
+    #only choose the data that: 1. Platform is PC; 2. Given visitors type.
+    
+    df1_1 = df1.groupby(["Date", keyword])["Count"].sum()    #sum up all counts on given day, grouped by 'keyword'.
+    df1_2 = df1.groupby(["Date", keyword])["Sample_size"].mean()    #keeep sample size (sample size do not need summation).
+    
+    df1_1 = DataFrame(df1_1).reset_index()
+    df1_2 = DataFrame(df1_2).reset_index()
+    
+    df_grouped_keyword = concat([df1_1, df1_2[['Sample_size']]], axis = 1)
+    
+    df_grouped_keyword['Ratio'] = df_grouped_keyword['Count'] / df_grouped_keyword['Sample_size']
+    # Add a column of ratio for grouped dataframe
+    
+    return(df_grouped_keyword)
 
     
 
